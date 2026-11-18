@@ -44,6 +44,10 @@
         <h3>Company Registry</h3><p>View organisations registered with Sanket Enterprise.</p>
         <div class="table-scroll"><table class="admin-table"><thead><tr><th>Company</th><th>Company ID</th><th>Users</th><th>Administrator</th><th>Status</th><th>Action</th></tr></thead><tbody id="companyRows"></tbody></table></div>
       </div>
+      <div class="admin-panel" id="companyDetailPanel" hidden>
+        <div class="admin-heading" style="margin-bottom:12px"><div><h3 id="companyDetailTitle">Company users</h3><p id="companyDetailSub">Manage this company's administrators and users.</p></div><div class="admin-actions"><button class="secondary" id="inviteCompanyUserBtn" type="button">Invite user</button><button class="ghost" id="closeCompanyDetailBtn" type="button">Close</button></div></div>
+        <div class="table-scroll"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="companyUserRows"></tbody></table></div>
+      </div>
       <div class="admin-panel">
         <h3>Administration responsibilities</h3><p>Clear separation of platform and company responsibilities.</p>
         <div class="table-scroll"><table class="admin-table"><thead><tr><th>Role</th><th>Responsibilities</th><th>Access scope</th></tr></thead><tbody>
@@ -58,6 +62,7 @@
 </main>
 </div>
 <div class="modal-back" id="modalBack"><div class="modal"><h2 id="modalTitle">New chat</h2><p id="modalText">Choose a demo contact.</p><input id="modalInput" placeholder="Name"><textarea id="namesInput" placeholder="One name per line" style="display:none"></textarea><div class="modal-actions"><button class="ghost" id="modalCancel">Cancel</button><button id="modalSave">Create</button></div></div></div>
+<div class="modal-back" id="companyModalBack"><div class="modal"><h2 id="companyModalTitle">Company setup</h2><p id="companyModalText">Complete the details.</p><label class="sub" for="companyField1" id="companyLabel1">Company name</label><input id="companyField1" placeholder="Company name"><label class="sub" for="companyField2" id="companyLabel2">Administrator name</label><input id="companyField2" placeholder="Full name"><label class="sub" for="companyField3" id="companyLabel3">Administrator email</label><input id="companyField3" type="email" placeholder="name@company.com"><label class="sub" for="companyRole" id="companyLabel4">Role</label><select id="companyRole" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--text);margin:8px 0"><option>Company Admin</option><option>Supervisor</option><option>Operator</option><option>Viewer</option></select><div class="modal-actions"><button class="ghost" id="companyModalCancel" type="button">Cancel</button><button id="companyModalSave" type="button">Save</button></div></div></div>
 <div class="call-back" id="callBack"><div class="call-panel"><h2 id="callTitle">Video call preview</h2><p class="call-state" id="callState">Local preview only — remote calling is not connected in this demo.</p><video id="localVideo" autoplay playsinline muted></video><div class="call-actions"><button class="secondary" id="cameraToggle" type="button">Turn camera off</button><button class="secondary" id="micToggle" type="button">Mute microphone</button><button class="danger" id="endCallBtn" type="button">End</button></div></div></div>
 <script>
 let USERS=[
@@ -82,14 +87,67 @@ function render(){
  $("search").style.display=state.view==="profile"?"none":"block";$("addBtn").style.display=["contacts","groups"].includes(state.view)?"block":"none";
  renderList();renderConversation();if(isAdmin)renderAdmin();
 }
-let companies=[{name:"ABC Security Services",id:"SANKET-1001",users:8,admin:"admin@abc.example",status:"Active"},{name:"Central Emergency Team",id:"SANKET-1002",users:6,admin:"control@central.example",status:"Active"}];
+const COMPANY_KEY="sanket-connect-companies-v1";
+const sampleCompanies=[
+ {id:"SANKET-1001",name:"ABC Security Services",status:"Active",users:[
+  {id:"m1001",name:"Rajesh Kumar",email:"admin@abc.example",role:"Company Admin",status:"Active"},
+  {id:"m1002",name:"Amit Singh",email:"amit@abc.example",role:"Supervisor",status:"Active"},
+  {id:"m1003",name:"Suresh Patel",email:"suresh@abc.example",role:"Operator",status:"Invited"}]},
+ {id:"SANKET-1002",name:"Central Emergency Team",status:"Active",users:[
+  {id:"m2001",name:"Anil Sharma",email:"control@central.example",role:"Company Admin",status:"Active"},
+  {id:"m2002",name:"Manoj Das",email:"manoj@central.example",role:"Operator",status:"Active"}]}
+];
+let companies;try{companies=JSON.parse(localStorage.getItem(COMPANY_KEY))||sampleCompanies}catch(e){companies=sampleCompanies}
+let selectedCompanyId=null;
+let companyModalAction=null;
+const saveCompanies=()=>{try{localStorage.setItem(COMPANY_KEY,JSON.stringify(companies))}catch(e){alert("Could not save company demo data in this browser.")}};
 function renderAdmin(){
  $("companyCount").textContent=String(companies.length).padStart(2,"0");
- $("adminUserCount").textContent=String(companies.reduce((n,x)=>n+x.users,0)).padStart(2,"0");
- $("companyRows").innerHTML=companies.map((x,i)=>'<tr><td><strong>'+escapeHtml(x.name)+'</strong></td><td>'+escapeHtml(x.id)+'</td><td>'+x.users+'</td><td>'+escapeHtml(x.admin)+'</td><td><span class="status '+(x.status==="Active"?"active":"pending")+'">'+escapeHtml(x.status)+'</span></td><td><button class="ghost" type="button" data-company="'+i+'">View</button></td></tr>').join("")||'<tr><td colspan="6" class="empty-row">No companies registered.</td></tr>';
- document.querySelectorAll("[data-company]").forEach(b=>b.onclick=()=>alert("Company record: "+companies[Number(b.dataset.company)].name+"\\n\\nDemo view only. User administration and tenant controls require the backend."));
+ const allUsers=companies.flatMap(x=>x.users||[]);
+ $("adminUserCount").textContent=String(allUsers.length).padStart(2,"0");
+ $("inviteCount").textContent=String(allUsers.filter(x=>x.status==="Invited").length).padStart(2,"0");
+ $("companyRows").innerHTML=companies.map(x=>'<tr><td><strong>'+escapeHtml(x.name)+'</strong></td><td>'+escapeHtml(x.id)+'</td><td>'+x.users.length+'</td><td>'+escapeHtml((x.users.find(u=>u.role==="Company Admin")||{}).email||"Not appointed")+'</td><td><span class="status '+(x.status==="Active"?"active":"pending")+'">'+escapeHtml(x.status)+'</span></td><td><button class="ghost" type="button" data-company="'+escapeHtml(x.id)+'">Manage</button></td></tr>').join("")||'<tr><td colspan="6" class="empty-row">No companies registered.</td></tr>';
+ document.querySelectorAll("[data-company]").forEach(b=>b.onclick=()=>showCompany(b.dataset.company));
+ if(selectedCompanyId&&companies.some(x=>x.id===selectedCompanyId))renderCompanyUsers();else $("companyDetailPanel").hidden=true;
 }
-$("createCompanyBtn").onclick=()=>openModal("Create company","Enter the organisation name. This demonstration adds a local registry entry only.",name=>{if(!name.trim())return;const next=companies.length+1;companies.push({name:name.trim(),id:"SANKET-"+String(1000+next).padStart(4,"0"),users:0,admin:"Not appointed",status:"Pending"});closeModal();renderAdmin()}, "Company name");
+function showCompany(id){selectedCompanyId=id;renderCompanyUsers();$("companyDetailPanel").hidden=false;$("companyDetailPanel").scrollIntoView({behavior:"smooth",block:"start"})}
+function renderCompanyUsers(){
+ const co=companies.find(x=>x.id===selectedCompanyId);if(!co)return;
+ $("companyDetailTitle").textContent=co.name+" — Users";
+ $("companyDetailSub").textContent=co.id+" · "+co.users.length+" registered or invited users";
+ $("companyUserRows").innerHTML=co.users.map(u=>'<tr><td><strong>'+escapeHtml(u.name)+'</strong></td><td>'+escapeHtml(u.email)+'</td><td>'+escapeHtml(u.role)+'</td><td><span class="status '+(u.status==="Active"?"active":"pending")+'">'+escapeHtml(u.status)+'</span></td><td><div class="admin-actions"><button class="ghost" type="button" data-role="'+escapeHtml(u.id)+'">Change role</button><button class="ghost" type="button" data-status="'+escapeHtml(u.id)+'">'+(u.status==="Suspended"?"Reactivate":"Suspend")+'</button></div></td></tr>').join("")||'<tr><td colspan="5" class="empty-row">No users have been added.</td></tr>';
+ document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{const member=co.users.find(u=>u.id===b.dataset.role);openCompanyModal("Change user role","Select the role for "+member.name+".","",member.name,member.email,member.role,(v)=>{member.role=v.role;saveCompanies();renderAdmin()})});
+ document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{const member=co.users.find(u=>u.id===b.dataset.status);member.status=member.status==="Suspended"?"Active":"Suspended";saveCompanies();renderAdmin()});
+}
+function openCompanyModal(title,desc,nameLabel,name,email,role,action){
+ companyModalAction=action;$("companyModalTitle").textContent=title;$("companyModalText").textContent=desc;
+ $("companyLabel1").textContent=nameLabel||"Full name";$("companyField1").value=name||"";$("companyField1").placeholder=nameLabel||"Full name";
+ $("companyField2").value=email||"";$("companyField3").value="";
+ $("companyLabel2").textContent="Email address";$("companyLabel3").textContent="";$("companyField3").style.display="none";
+ $("companyLabel4").style.display=role==="__hidden"?"none":"block";$("companyRole").style.display=role==="__hidden"?"none":"block";
+ $("companyRole").value=role||"Company Admin";
+ $("companyModalBack").style.display="grid";$("companyField1").focus();
+}
+function closeCompanyModal(){$("companyModalBack").style.display="none";companyModalAction=null}
+$("createCompanyBtn").onclick=()=>openCompanyModal("Create company","Add the organisation and appoint its first Company Admin.","Company name","","","Company Admin",values=>{
+ if(!values.name.trim()||!values.email.trim()){alert("Enter a company name and administrator email.");return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)){alert("Enter a valid email address.");return}
+ if(companies.some(x=>x.name.toLowerCase()===values.name.trim().toLowerCase())){alert("A company with this name already exists.");return}
+ const id="SANKET-"+String(1001+companies.length).padStart(4,"0");
+ companies.push({id,name:values.name.trim(),status:"Pending",users:[{id:"m"+Date.now(),name:values.name.trim()+" Administrator",email:values.email.trim(),role:"Company Admin",status:"Invited"}]});
+ saveCompanies();selectedCompanyId=id;closeCompanyModal();renderAdmin();
+ alert("Company created in this browser demo. The first administrator is marked Invited. No email was sent.");
+});
+$("inviteCompanyUserBtn").onclick=()=>{const co=companies.find(x=>x.id===selectedCompanyId);if(!co)return;openCompanyModal("Invite company user","Add a person to "+co.name+". The invitation is simulated in this demo.","Full name","","","Operator",values=>{
+ if(!values.name.trim()||!values.email.trim()){alert("Enter the user's name and email address.");return}
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)){alert("Enter a valid email address.");return}
+ if(co.users.some(u=>u.email.toLowerCase()===values.email.trim().toLowerCase())){alert("This email is already registered in this company.");return}
+ co.users.push({id:"m"+Date.now(),name:values.name.trim(),email:values.email.trim(),role:values.role,status:"Invited"});saveCompanies();closeCompanyModal();renderAdmin();
+ alert("User added as Invited in this browser demo. No email or account has been created.");
+})};
+$("companyModalSave").onclick=()=>{if(companyModalAction)companyModalAction({name:$("companyField1").value,email:$("companyField2").value,role:$("companyRole").value})};
+$("companyModalCancel").onclick=closeCompanyModal;
+$("closeCompanyDetailBtn").onclick=()=>{$("companyDetailPanel").hidden=true;selectedCompanyId=null};
 function renderList(){
  const q=$("search").value.toLowerCase();let html="";
  if(state.view==="profile"){const p=state.profiles[state.current]||{};$("listItems").innerHTML=`<div class="profile"><div class="avatar">${user(state.current)[2]}</div><strong>${user(state.current)[1]}</strong><p class="sub">Demo profile · ${state.space} space</p><label class="sub">Status</label><input class="search" id="statusEdit" value="${(p.status||"Available for testing").replace(/"/g,"&quot;")}" /><button id="saveStatus">Save status</button></div>`;$("saveStatus").onclick=()=>{state.profiles[state.current]={status:$("statusEdit").value};persist();render()};return}
