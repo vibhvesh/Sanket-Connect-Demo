@@ -119,22 +119,22 @@ function renderCompanyUsers(){
  document.querySelectorAll("[data-role]").forEach(b=>b.onclick=()=>{const member=co.users.find(u=>u.id===b.dataset.role);openCompanyModal("Change user role","Select the role for "+member.name+".","",member.name,member.email,member.role,(v)=>{member.role=v.role;saveCompanies();renderAdmin()})});
  document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{const member=co.users.find(u=>u.id===b.dataset.status);member.status=member.status==="Suspended"?"Active":"Suspended";saveCompanies();renderAdmin()});
 }
-function openCompanyModal(title,desc,nameLabel,name,email,role,action){
+function openCompanyModal(title,desc,nameLabel,name,email,role,action,threeFields=false){
  companyModalAction=action;$("companyModalTitle").textContent=title;$("companyModalText").textContent=desc;
  $("companyLabel1").textContent=nameLabel||"Full name";$("companyField1").value=name||"";$("companyField1").placeholder=nameLabel||"Full name";
  $("companyField2").value=email||"";$("companyField3").value="";
- $("companyLabel2").textContent="Email address";$("companyLabel3").textContent="";$("companyField3").style.display="none";
+ $("companyLabel2").textContent=threeFields?"First administrator full name":"Email address";$("companyLabel3").textContent=threeFields?"Administrator email address":"";$("companyField3").style.display=threeFields?"block":"none";$("companyLabel3").style.display=threeFields?"block":"none";
  $("companyLabel4").style.display=role==="__hidden"?"none":"block";$("companyRole").style.display=role==="__hidden"?"none":"block";
  $("companyRole").value=role||"Company Admin";
  $("companyModalBack").style.display="grid";$("companyField1").focus();
 }
 function closeCompanyModal(){$("companyModalBack").style.display="none";companyModalAction=null}
 $("createCompanyBtn").onclick=()=>openCompanyModal("Create company","Add the organisation and appoint its first Company Admin.","Company name","","","Company Admin",values=>{
- if(!values.name.trim()||!values.email.trim()){alert("Enter a company name and administrator email.");return}
+ if(!values.name.trim()||!values.adminName.trim()||!values.email.trim()){alert("Enter a company name, administrator name and email address.");return}
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)){alert("Enter a valid email address.");return}
  if(companies.some(x=>x.name.toLowerCase()===values.name.trim().toLowerCase())){alert("A company with this name already exists.");return}
  const id="SANKET-"+String(1001+companies.length).padStart(4,"0");
- companies.push({id,name:values.name.trim(),status:"Pending",users:[{id:"m"+Date.now(),name:values.name.trim()+" Administrator",email:values.email.trim(),role:"Company Admin",status:"Invited"}]});
+ companies.push({id,name:values.name.trim(),status:"Pending",users:[{id:"m"+Date.now(),name:values.adminName.trim(),email:values.email.trim(),role:"Company Admin",status:"Invited"}]});
  saveCompanies();selectedCompanyId=id;closeCompanyModal();renderAdmin();
  alert("Company created in this browser demo. The first administrator is marked Invited. No email was sent.");
 });
@@ -145,7 +145,7 @@ $("inviteCompanyUserBtn").onclick=()=>{const co=companies.find(x=>x.id===selecte
  co.users.push({id:"m"+Date.now(),name:values.name.trim(),email:values.email.trim(),role:values.role,status:"Invited"});saveCompanies();closeCompanyModal();renderAdmin();
  alert("User added as Invited in this browser demo. No email or account has been created.");
 })};
-$("companyModalSave").onclick=()=>{if(companyModalAction)companyModalAction({name:$("companyField1").value,email:$("companyField2").value,role:$("companyRole").value})};
+$("companyModalSave").onclick=()=>{if(companyModalAction)companyModalAction({name:$("companyField1").value,adminName:$("companyField2").value,email:$("companyField3").style.display==="none"?$("companyField2").value:$("companyField3").value,role:$("companyRole").value})};
 $("companyModalCancel").onclick=closeCompanyModal;
 $("closeCompanyDetailBtn").onclick=()=>{$("companyDetailPanel").hidden=true;selectedCompanyId=null};
 function renderList(){
