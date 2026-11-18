@@ -137,7 +137,7 @@ $("createCompanyBtn").onclick=()=>openCompanyModal("Create company","Add the org
  companies.push({id,name:values.name.trim(),status:"Pending",users:[{id:"m"+Date.now(),name:values.adminName.trim(),email:values.email.trim(),role:"Company Admin",status:"Invited"}]});
  saveCompanies();selectedCompanyId=id;closeCompanyModal();renderAdmin();
  alert("Company created in this browser demo. The first administrator is marked Invited. No email was sent.");
-});
+},true);
 $("inviteCompanyUserBtn").onclick=()=>{const co=companies.find(x=>x.id===selectedCompanyId);if(!co)return;openCompanyModal("Invite company user","Add a person to "+co.name+". The invitation is simulated in this demo.","Full name","","","Operator",values=>{
  if(!values.name.trim()||!values.email.trim()){alert("Enter the user's name and email address.");return}
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)){alert("Enter a valid email address.");return}
