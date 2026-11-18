@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>Sanket Connect — 10-user prototype</title>
+<style>
+:root{--bg:#0b1220;--panel:#111c2e;--panel2:#17243a;--line:#263650;--text:#eef4ff;--muted:#91a3bd;--accent:#35c6a2;--blue:#5b8cff;--bubble:#1c2d46;--mine:#145b50}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;background:var(--accent);color:#06251f;font-weight:700}button.secondary{background:#263650;color:var(--text)}button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}button.danger{background:#7e2937;color:#fff}.app{min-height:100vh;display:grid;grid-template-columns:270px 1fr;max-width:1500px;margin:auto}.sidebar{background:#0f1929;border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:800}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#36d6ae,#4c8dff);display:grid;place-items:center;color:#071a25;font-weight:900}.sub{color:var(--muted);font-size:12px}.profile{background:var(--panel);border:1px solid var(--line);padding:12px;border-radius:14px}.profile select{width:100%;margin-top:8px}.space-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px}.space-tabs button{padding:9px 5px;font-size:13px}.space-tabs button.active{background:var(--accent);color:#06251f}.nav{display:grid;gap:6px}.nav button{text-align:left;background:transparent;color:var(--muted);font-weight:600}.nav button.active,.nav button:hover{background:var(--panel2);color:var(--text)}.section-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:4px 0}.main{min-width:0;display:grid;grid-template-rows:auto 1fr}.topbar{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.topbar h1{font-size:18px;margin:0}.topbar p{margin:3px 0 0;color:var(--muted);font-size:12px}.content{display:grid;grid-template-columns:300px 1fr;min-height:0;height:calc(100vh - 75px)}.list{border-right:1px solid var(--line);padding:16px;overflow:auto}.list-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.list-head h2{font-size:15px;margin:0}.search{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);margin-bottom:12px}.item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;cursor:pointer}.item:hover,.item.selected{background:var(--panel2)}.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;background:#25405b;color:#d9f6ef;font-weight:800}.item strong{display:block;font-size:13px}.item small{color:var(--muted);font-size:11px}.chat{display:flex;flex-direction:column;min-width:0;min-height:0}.chat-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.chat-head strong{display:block}.chat-head small{color:var(--muted)}.messages{flex:1;overflow:auto;padding:22px;display:flex;flex-direction:column;gap:10px;background:radial-gradient(ellipse at top right,#17263a 0,transparent 45%)}.empty{margin:auto;text-align:center;color:var(--muted);max-width:360px}.bubble{max-width:min(75%,560px);padding:10px 13px;border-radius:14px;background:var(--bubble);align-self:flex-start;overflow-wrap:anywhere}.bubble.mine{align-self:flex-end;background:var(--mine)}.bubble .sender{font-size:11px;color:#8fe5d0;font-weight:700;margin-bottom:3px}.bubble time{display:block;text-align:right;color:#a8bbce;font-size:10px;margin-top:4px}.composer{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:9px}.composer input{flex:1;min-width:0;padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--text)}.notice{margin:14px;padding:12px;border:1px solid #765b2a;background:#332a19;color:#f4d99a;border-radius:12px;font-size:12px}.modal-back{position:fixed;inset:0;background:#0009;display:none;place-items:center;padding:20px}.modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:420px;width:100%}.modal h2{margin-top:0}.modal p{color:var(--muted);font-size:13px}.modal input{width:100%;padding:11px;background:var(--bg);border:1px solid var(--line);border-radius:10px;color:var(--text);margin:8px 0}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.mobilebar{display:none}
+@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{padding:12px;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:17px}.sidebar .nav{display:flex;overflow:auto}.sidebar .nav button{white-space:nowrap}.profile{display:flex;align-items:center;gap:10px}.profile select{margin:0;max-width:190px}.space-tabs{max-width:320px}.notice{margin:8px}.content{grid-template-columns:120px 1fr;height:calc(100vh - 240px)}.list{padding:8px}.list-head h2{font-size:12px}.list-head button{display:none}.search{padding:7px;font-size:12px}.item{padding:7px;gap:6px}.item .avatar{width:32px;height:32px;font-size:11px}.item strong{font-size:11px}.item small{display:none}.topbar{padding:10px 14px}.topbar h1{font-size:15px}.topbar .sub{display:none}.messages{padding:12px}.bubble{max-width:90%}.composer{padding:9px}.composer button{padding:10px}.sidebar .section-label{display:none}}
+@media(max-width:420px){.content{grid-template-columns:100px 1fr;height:calc(100vh - 250px)}.space-tabs button{font-size:11px}.sidebar{gap:9px}.topbar{align-items:flex-start;flex-direction:column}.topbar>div:last-child{display:flex;gap:6px}.topbar button{font-size:11px;padding:8px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">S</div><div>Sanket Connect<div class="sub">10-user disposable prototype</div></div></div>
+  <div class="profile"><div><strong id="currentName">Aarav Sharma</strong><div class="sub">Demo account</div></div><select id="userSelect" aria-label="Switch demo user"></select></div>
+  <div><div class="section-label">Workspace</div><div class="space-tabs"><button id="personalBtn" class="active">Personal</button><button id="companyBtn" class="secondary">Company</button></div></div>
+  <div><div class="section-label">Navigate</div><div class="nav"><button class="active" data-view="chats">◉ &nbsp; Chats</button><button data-view="contacts">♙ &nbsp; Contacts</button><button data-view="groups">◎ &nbsp; Groups</button><button data-view="profile">◌ &nbsp; My profile</button></div></div>
+  <div class="notice">Demo only. This browser stores test data locally. No accounts, messages or files are sent to other devices.</div>
+  <button class="danger" id="wipeBtn">Wipe all local data</button>
+  <div class="sub">Prototype build · No backend · No backups</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div><h1 id="pageTitle">Chats</h1><p id="spaceLabel">Personal workspace · Private demo area</p></div><div><button class="secondary" id="newChatBtn">＋ New chat</button> <button class="ghost" id="resetBtn">Reset demo</button></div></header>
+  <section class="content">
+    <div class="list"><div class="list-head"><h2 id="listTitle">Recent chats</h2><button class="ghost" id="addBtn">＋</button></div><input class="search" id="search" placeholder="Search"><div id="listItems"></div></div>
+    <div class="chat"><div class="chat-head"><div class="avatar" id="chatAvatar">SC</div><div><strong id="chatTitle">Welcome to Sanket Connect</strong><small id="chatSub">Select a demo conversation</small></div></div><div class="messages" id="messages"><div class="empty"><h2>Welcome to Sanket Connect</h2><p>Choose a contact or group to explore the prototype. Switch between the ten demo users using the account selector.</p></div></div><form class="composer" id="composer"><input id="messageInput" placeholder="Type a demo message…" autocomplete="off"><button type="submit">Send</button></form></div>
+  </section>
+</main>
+</div>
+<div class="modal-back" id="modalBack"><div class="modal"><h2 id="modalTitle">New chat</h2><p id="modalText">Choose a demo contact.</p><input id="modalInput" placeholder="Name"><div class="modal-actions"><button class="ghost" id="modalCancel">Cancel</button><button id="modalSave">Create</button></div></div></div>
+<script>
+const USERS=[
+["u1","Aarav Sharma","AS"],["u2","Priya Patel","PP"],["u3","Kabir Singh","KS"],["u4","Meera Joshi","MJ"],["u5","Rohan Verma","RV"],["u6","Ananya Rao","AR"],["u7","Dev Shah","DS"],["u8","Ishita Das","ID"],["u9","Arjun Mehta","AM"],["u10","Neha Kapoor","NK"]
+];
+const KEY="sanket-connect-demo-v1";
+const seed=()=>({current:"u1",space:"personal",view:"chats",selected:"u2",chats:{personal:{u2:[{from:"u2",text:"Welcome to the Sanket Connect prototype!",at:Date.now()-60000}],u3:[{from:"u3",text:"Testing the personal workspace.",at:Date.now()-30000}]},company:{u2:[{from:"u2",text:"Welcome to the company demo space.",at:Date.now()-50000}]}},groups:{personal:[{id:"g1",name:"Weekend Plans",members:["u1","u2","u3"]}],company:[{id:"g2",name:"Operations Team",members:["u1","u4","u5","u6"]}]},contacts:{personal:["u2","u3","u4","u5","u6","u7","u8","u9","u10"],company:["u2","u4","u5","u6"]},profiles:{}});
+let state;try{state=JSON.parse(localStorage.getItem(KEY))||seed()}catch(e){state=seed()}
+let modalAction=null;
+const $=id=>document.getElementById(id);
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){alert("Browser storage is unavailable or full. Your latest change may not persist.")}};
+const user=id=>USERS.find(u=>u[0]===id)||USERS[0];
+const initials=s=>s.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();
+const activeGroups=()=>state.groups[state.space]||[];
+function render(){
+ $("currentName").textContent=user(state.current)[1];$("userSelect").innerHTML=USERS.map(u=>`<option value="${u[0]}" ${u[0]===state.current?"selected":""}>${u[1]}</option>`).join("");
+ $("personalBtn").className=state.space==="personal"?"active":"secondary";$("companyBtn").className=state.space==="company"?"active":"secondary";
+ $("spaceLabel").textContent=state.space==="personal"?"Personal workspace · Private demo area":"Company workspace · Simulated organisation";
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===state.view));
+ const titles={chats:"Chats",contacts:"Contacts",groups:"Groups",profile:"My profile"};$("pageTitle").textContent=titles[state.view];$("listTitle").textContent=state.view==="chats"?"Recent chats":titles[state.view];
+ $("search").style.display=state.view==="profile"?"none":"block";$("addBtn").style.display=["contacts","groups"].includes(state.view)?"block":"none";
+ renderList();renderConversation();
+}
+function renderList(){
+ const q=$("search").value.toLowerCase();let html="";
+ if(state.view==="profile"){const p=state.profiles[state.current]||{};$("listItems").innerHTML=`<div class="profile"><div class="avatar">${user(state.current)[2]}</div><strong>${user(state.current)[1]}</strong><p class="sub">Demo profile · ${state.space} space</p><label class="sub">Status</label><input class="search" id="statusEdit" value="${(p.status||"Available for testing").replace(/"/g,"&quot;")}" /><button id="saveStatus">Save status</button></div>`;$("saveStatus").onclick=()=>{state.profiles[state.current]={status:$("statusEdit").value};persist();render()};return}
+ if(state.view==="groups"){activeGroups().filter(g=>g.name.toLowerCase().includes(q)).forEach(g=>html+=`<div class="item ${state.selected===g.id?"selected":""}" data-id="${g.id}" data-kind="group"><div class="avatar">#</div><div><strong>${g.name}</strong><small>${g.members.length} members</small></div></div>`)}
+ else {
+  let ids=state.view==="contacts"?(state.contacts[state.space]||[]):Object.keys(state.chats[state.space]||{});
+  ids=ids.filter(id=>user(id)[1].toLowerCase().includes(q));
+  ids.forEach(id=>{const msgs=state.chats[state.space][id]||[];const last=msgs[msgs.length-1];html+=`<div class="item ${state.selected===id?"selected":""}" data-id="${id}" data-kind="user"><div class="avatar">${user(id)[2]}</div><div><strong>${user(id)[1]}</strong><small>${last?last.text:"Demo contact"}</small></div></div>`});
+ }
+ $("listItems").innerHTML=html||`<div class="sub" style="padding:12px">Nothing found.</div>`;
+ document.querySelectorAll(".item").forEach(el=>el.onclick=()=>{state.selected=el.dataset.id;state.selectedKind=el.dataset.kind;persist();render()});
+}
+function renderConversation(){
+ const isGroup=state.selectedKind==="group"||activeGroups().some(g=>g.id===state.selected);
+ if(isGroup){const g=activeGroups().find(x=>x.id===state.selected);if(!g){$("chatTitle").textContent="Select a conversation";$("chatSub").textContent="";$("messages").innerHTML="";return}$("chatTitle").textContent=g.name;$("chatSub").textContent=`${g.members.length} demo members · ${state.space}`;$("chatAvatar").textContent="#";$("composer").style.display="flex";const arr=state.chats[state.space][g.id]||[];drawMessages(arr,true);return}
+ const id=state.selected;if(!id||!user(id)){$("chatTitle").textContent="Welcome to Sanket Connect";$("chatSub").textContent="Select a demo conversation";$("messages").innerHTML='<div class="empty"><h2>Welcome</h2><p>Choose a contact or group to explore the demo.</p></div>';return}
+ $("chatTitle").textContent=user(id)[1];$("chatSub").textContent=`Demo user · ${state.space} space`;$("chatAvatar").textContent=user(id)[2];$("composer").style.display="flex";drawMessages((state.chats[state.space][id]||[]),false);
+}
+function drawMessages(arr,group){$("messages").innerHTML=arr.length?arr.map(m=>`<div class="bubble ${m.from===state.current?"mine":""}">${group&&m.from!==state.current?`<div class="sender">${user(m.from)[1]}</div>`:""}${escapeHtml(m.text)}<time>${new Date(m.at).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</time></div>`).join(""):'<div class="empty"><h3>No messages yet</h3><p>Send a message to try the local demo.</p></div>';$("messages").scrollTop=$("messages").scrollHeight}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function send(e){e.preventDefault();const text=$("messageInput").value.trim();if(!text)return;let id=state.selected;if(!id)return;state.chats[state.space][id]??=[];state.chats[state.space][id].push({from:state.current,text,at:Date.now()});$("messageInput").value="";persist();render()}
+function openModal(title,desc,action,placeholder){modalAction=action;$("modalTitle").textContent=title;$("modalText").textContent=desc;$("modalInput").placeholder=placeholder||"Name";$("modalInput").value="";$("modalBack").style.display="grid";$("modalInput").focus()}
+function closeModal(){$("modalBack").style.display="none";modalAction=null}
+$("userSelect").onchange=e=>{state.current=e.target.value;state.selected="u2";state.selectedKind="user";persist();render()};
+$("personalBtn").onclick=()=>{state.space="personal";state.selected="u2";state.selectedKind="user";persist();render()};
+$("companyBtn").onclick=()=>{state.space="company";state.selected="u2";state.selectedKind="user";persist();render()};
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{state.view=b.dataset.view;persist();render()});
+$("composer").onsubmit=send;$("search").oninput=renderList;
+$("newChatBtn").onclick=()=>openModal("New demo chat","Select a demo user by entering their exact name.",name=>{const u=USERS.find(x=>x[1].toLowerCase()===name.toLowerCase());if(!u||u[0]===state.current){alert("Enter another demo user's exact name.");return}state.contacts[state.space]=[...new Set([...(state.contacts[state.space]||[]),u[0]])];state.selected=u[0];state.selectedKind="user";state.view="chats";persist();closeModal();render()},"e.g. Priya Patel");
+$("addBtn").onclick=()=>state.view==="groups"?openModal("Create group","Enter a group name.",name=>{if(!name.trim())return;const id="g"+Date.now();state.groups[state.space].push({id,name:name.trim(),members:[state.current]});state.selected=id;state.selectedKind="group";persist();closeModal();render()},"Group name"):openModal("Add contact","Enter one of the ten demo users' exact names.",name=>{const u=USERS.find(x=>x[1].toLowerCase()===name.toLowerCase());if(!u||u[0]===state.current){alert("Enter another demo user's exact name.");return}state.contacts[state.space]=[...new Set([...(state.contacts[state.space]||[]),u[0]])];state.selected=u[0];state.selectedKind="user";persist();closeModal();render()},"e.g. Meera Joshi");
+$("modalCancel").onclick=closeModal;$("modalSave").onclick=()=>modalAction&&modalAction($("modalInput").value);
+$("wipeBtn").onclick=()=>{if(confirm("Permanently wipe all Sanket Connect demo data stored in this browser?")){localStorage.removeItem(KEY);state=seed();persist();render()}};
+$("resetBtn").onclick=()=>{if(confirm("Reset this demo to its original sample users and messages?")){state=seed();persist();render()}};
+render();
+</script>
+</body></html>
